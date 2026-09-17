@@ -1,0 +1,28 @@
+// 1. Failed sign-ins for the affected account
+SigninLogs
+| where UserPrincipalName == "farhanrazik@nanolense.onmicrosoft.com"
+| where ResultType == 50126
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, AppDisplayName, ResultDescription
+| order by TimeGenerated desc
+
+
+// 2. All authentication activity from the source IP
+SigninLogs
+| where IPAddress == "111.223.185.65"
+| project TimeGenerated, UserPrincipalName, IPAddress, ResultType, Location, AppDisplayName, ClientAppUsed
+| order by TimeGenerated asc
+
+
+// 3. Successful authentication from the source IP
+SigninLogs
+| where IPAddress == "111.223.185.65"
+| where ResultType == 0
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, AppDisplayName, ClientAppUsed
+| order by TimeGenerated asc
+
+
+// 4. Entra ID audit activity for the affected account
+AuditLogs
+| where TargetResources has "farhanrazik@nanolense.onmicrosoft.com"
+| project TimeGenerated, OperationName, Result, InitiatedBy, TargetResources
+| order by TimeGenerated desc
